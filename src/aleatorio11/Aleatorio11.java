@@ -17,9 +17,6 @@ import java.util.logging.Logger;
  */
 public class Aleatorio11 {
 
-    /**
-     * @param args the command line arguments
-     */
     public static RandomAccessFile raf;
     public static String[] codes ={"p1","p2","p3"};
     public static String[] descricion ={"parafusos","cravos","tachas"};
@@ -28,7 +25,8 @@ public class Aleatorio11 {
     public static void main(String[] args) {
         iniciarRAF("/home/local/DANIELCASTELAO/otorradomiguez/NetBeansProjects/aleatorio11/aleatorio11.txt");
         escribir(3);
-        leer(2);
+        Product productoLeido=leer(2);
+        System.out.println(productoLeido.toString());
     }
     
     public static void iniciarRAF(String ruta){
@@ -41,6 +39,8 @@ public class Aleatorio11 {
     
     /**
      * Escribimos en el archivo los valores de las tres variables que forman un productos por tantos productos como indicados
+     * Hay que tener en cuenta que si ya existiese el archivo solo sobrescribiria tantos elementos como le indiquemos, si hubiese mas
+     * elementos que los escritos seguirian en el archivo
      * @param elementos numero de productos que leeremos de los arrays y escribiremos en el archivo
      */
     public static void escribir(int elementos){
@@ -55,35 +55,42 @@ public class Aleatorio11 {
                 Logger.getLogger(Aleatorio11.class.getName()).log(Level.SEVERE, null, ex);
             }            
         }
+        /*
+        //No es necesario cerrar el RandomAccesFile para que escriba en el archivo,
+        //con lo cual podemos dejarlo abierto y usarlo luego para leer o escribir mas
+        //Si lo cerramos tendriamos que volver a instanciarlo en el metodo leer o dará error al estar cerrado
         try {
             raf.close();
         } catch (IOException ex) {
             Logger.getLogger(Aleatorio11.class.getName()).log(Level.SEVERE, null, ex);
         }
+        */
     }
     
     /**
      * leemos del archivo los 3 valores que compondrian un producto
      * @param NumElemento el elemento que queremos leer (1 es el primero)
+     * @return Product devuelve el producto creado con los datos que hemos leido
      */
-    public static void leer(int NumElemento){
+    public static Product leer(int NumElemento){
         String codigo="";
         String descrip="";
         int precio;
-        iniciarRAF("/home/local/DANIELCASTELAO/otorradomiguez/NetBeansProjects/aleatorio11/aleatorio11.txt");
+        Product producto=new Product();
         try {
             raf.seek(30*(NumElemento-1));
-            for(int i=0;i<3;i++){            
+            for(int i=0;i<3;i++){
                 codigo+=raf.readChar();            
             }
             for(int j=0;j<10;j++){
                 descrip+=raf.readChar();
             }
             precio=raf.readInt();
-            System.out.println(codigo+", "+descrip+", "+precio);
+            producto= new Product(codigo.trim(),descrip.trim(),precio);
         } catch (IOException ex) {
-                Logger.getLogger(Aleatorio11.class.getName()).log(Level.SEVERE, null, ex);
+               System.out.println("No se ha podido leer el producto, devuelto producto por defecto");
             }
+        return producto;
     }
     
 }
